@@ -1,6 +1,5 @@
 package com.mywalmartapp.ui.productList
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mywalmartapp.data.repository.ProductRepository
@@ -23,18 +22,22 @@ class ProductListViewModel @Inject constructor(
     private val _products = MutableStateFlow<List<ProductItem>>(emptyList())
     private val _categories = MutableStateFlow(listOf("Todos"))
     private val _selectedCategory = MutableStateFlow("Todos")
-    private val _cartItems = mutableStateListOf<CartItem>()
-    private val _cartItemsState = MutableStateFlow<List<CartItem>>(emptyList())
+    private val _cartItems = MutableStateFlow<List<CartItem>>(emptyList())
+    private val _cartTotal = MutableStateFlow(0f)
 
     val topProduct: StateFlow<ProductItem?> get() = _topProduct
     val products: StateFlow<List<ProductItem>> get() = _products
     val categories: StateFlow<List<String>> get() = _categories
     val selectedCategory: StateFlow<String?> get() = _selectedCategory
-    val cartItemsState: StateFlow<List<CartItem>> get() = _cartItemsState
+    val cartItems: StateFlow<List<CartItem>> get() = _cartItems
+    val cartTotal: StateFlow<Float> get() = _cartTotal
 
     init {
         loadProducts()
         loadCategories()
+        viewModelScope.launch {
+            _cartItems.collect { updateCartTotal() }
+        }
     }
 
     private fun loadProducts() {
@@ -79,33 +82,44 @@ class ProductListViewModel @Inject constructor(
 
 
     fun addToCart(product: ProductItem) {
-        val existingItem = _cartItems.find { it.product.id == product.id }
-        if (existingItem != null) {
-            existingItem.quantity++
-        } else {
-            _cartItems.add(CartItem(product, 1))
-        }
-        _cartItemsState.value = _cartItems.toList()
-    }
-
-    fun decreaseToCart(product: ProductItem) {
-        val existingItem = _cartItems.find { it.product.id == product.id }
-        existingItem?.let {
-            if (it.quantity > 1) {
-                it.quantity--
-            } else {
-                _cartItems.remove(it)
+        val existingItem = _cartItems.value.find { it.product.id == product.id }
+        val updatedItems = if (existingItem != null) {
+            _cartItems.value.map {
+                if (it.product.id == existingItem.product.id) {
+                    it.copy(quantity = it.quantity + 1)
+                } else {
+                    it
+                }
             }
-            _cartItemsState.value = _cartItems.toList()
+        } else {
+            _cartItems.value + CartItem(product, 1)
+        }
+        _cartItems.value = updatedItems
+    }
+
+    fun decreaseFromCart(product: ProductItem) {
+        val existingItem = _cartItems.value.find { it.product.id == product.id }
+        if (existingItem != null && existingItem.quantity > 1) {
+            val updatedItems = _cartItems.value.map {
+                if (it.product.id == existingItem.product.id) {
+                    it.copy(quantity = it.quantity - 1)
+                } else {
+                    it
+                }
+            }
+            _cartItems.value = updatedItems
+        } else {
+            removeFromCart(product)
         }
     }
 
-    fun removeToCart(product: ProductItem) {
-        val existingItem = _cartItems.find { it.product.id == product.id }
-        println("hola"+existingItem)
-        existingItem?.let {
-            _cartItems.remove(it)
-            _cartItemsState.value = _cartItems.toList()
-        }
+    fun removeFromCart(product: ProductItem) {
+        val updatedItems = _cartItems.value.filterNot { it.product.id == product.id }
+        _cartItems.value = updatedItems
+    }
+
+    private fun updateCartTotal() {
+        val total = _cartItems.value.sumOf { it.product.price * it.quantity }.toFloat()
+        _cartTotal.value = total
     }
 }

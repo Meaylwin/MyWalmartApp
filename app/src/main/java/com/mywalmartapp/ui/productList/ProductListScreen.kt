@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -18,6 +19,8 @@ import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -36,9 +39,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.Color.Companion.LightGray
+import androidx.compose.ui.graphics.Color.Companion.Red
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.myproductswallmart.R
 import com.mywalmartapp.ui.productList.entities.ProductItem
@@ -64,7 +72,8 @@ fun ProductListScreen(
     val products by productListViewModel.products.collectAsState()
     val categories by productListViewModel.categories.collectAsState()
     val selectedCategory by productListViewModel.selectedCategory.collectAsState()
-    val cartItems by productListViewModel.cartItemsState.collectAsState()
+    val cartItems by productListViewModel.cartItems.collectAsState()
+    val cartTotal by productListViewModel.cartTotal.collectAsState()
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
@@ -109,11 +118,25 @@ fun ProductListScreen(
                     SheetContent.CART -> {
                         CartSheetContent(
                             cartItems = cartItems,
-                            onClickAddProduct = { productItem -> productListViewModel.addToCart(productItem) },
-                            onClickDecreaseProduct = { productItem -> productListViewModel.decreaseToCart(productItem) },
-                            onClickRemoveProduct = { productItem -> productListViewModel.removeToCart(productItem) }
+                            cartTotal = cartTotal,
+                            onClickAddProduct = { productItem ->
+                                productListViewModel.addToCart(
+                                    productItem
+                                )
+                            },
+                            onClickDecreaseProduct = { productItem ->
+                                productListViewModel.decreaseFromCart(
+                                    productItem
+                                )
+                            },
+                            onClickRemoveProduct = { productItem ->
+                                productListViewModel.removeFromCart(
+                                    productItem
+                                )
+                            }
                         )
                     }
+
                     SheetContent.PRODUCT_DETAILS -> {
                         selectedProduct?.let { product ->
                             BottomSheetContent(
@@ -148,18 +171,39 @@ fun ProductListScreen(
                             }
                         },
                         actions = {
-                            IconButton(onClick = {
-                                coroutineScope.launch {
-                                    setSheetContent(SheetContent.CART)
-                                    delay(200)
-                                    bottomSheetState.show()
+                            BadgedBox(
+                                badge = {
+                                    if (cartItems.isNotEmpty()) {
+                                        Badge(
+                                            modifier = Modifier.offset(x = (-20).dp, y = 20.dp),
+                                            containerColor = Red
+                                        ) {
+                                            Text(
+                                                text = cartItems.size.toString(),
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = White
+                                            )
+                                        }
+                                    }
                                 }
-                            }) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_walmart),
-                                    contentDescription = null,
-                                    tint = Color.White
-                                )
+                            ) {
+                                IconButton(
+                                    onClick = {
+                                        coroutineScope.launch {
+                                            setSheetContent(SheetContent.CART)
+                                            delay(200)
+                                            bottomSheetState.show()
+                                        }
+                                    },
+                                    modifier = Modifier.padding(10.dp)
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_walmart),
+                                        contentDescription = null,
+                                        tint = WalmartYellow
+                                    )
+                                }
                             }
                         },
                         colors = topAppBarColors(
@@ -185,7 +229,11 @@ fun ProductListScreen(
                             if (currentTopProduct != null) {
                                 TopProductComponent(
                                     topProduct = currentTopProduct,
-                                    onClickAddProduct = { productListViewModel.addToCart(currentTopProduct) },
+                                    onClickAddProduct = {
+                                        productListViewModel.addToCart(
+                                            currentTopProduct
+                                        )
+                                    },
                                 ) {
                                     setSelectedProduct(currentTopProduct)
                                     coroutineScope.launch {

@@ -43,6 +43,7 @@ import com.mywalmartapp.ui.theme.Orange
 @Composable
 fun CartSheetContent(
     cartItems: List<CartItem>,
+    cartTotal: Float,
     onClickAddProduct: (ProductItem) -> Unit,
     onClickDecreaseProduct: (ProductItem) -> Unit,
     onClickRemoveProduct: (ProductItem) -> Unit
@@ -50,7 +51,7 @@ fun CartSheetContent(
     if (cartItems.isEmpty()) {
         Column(
             modifier = Modifier
-                .fillMaxHeight(fraction = 0.8f)
+                .fillMaxHeight(fraction = 0.75f)
                 .padding(20.dp)
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.Center,
@@ -68,11 +69,11 @@ fun CartSheetContent(
                 modifier = Modifier.size(80.dp)
             )
         }
-        Spacer(modifier = Modifier.padding(46.dp))
+        Spacer(modifier = Modifier.padding(top = 94.dp))
     } else {
         LazyColumn(
             modifier = Modifier
-                .fillMaxHeight(fraction = 0.8f)
+                .fillMaxHeight(fraction = 0.75f)
                 .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
@@ -114,7 +115,7 @@ fun CartSheetContent(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = cartItem.product.title.orEmpty(),
+                                text = cartItem.product.title,
                                 textAlign = TextAlign.Center,
                                 fontWeight = FontWeight.SemiBold,
                                 maxLines = 3,
@@ -191,7 +192,11 @@ fun CartSheetContent(
                 .padding(horizontal = 50.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Total: $")
+            Text(
+                text = "Total: $$cartTotal",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.SemiBold
+            )
             Button(
                 onClick = {  },
                 shape = RoundedCornerShape(16.dp),
