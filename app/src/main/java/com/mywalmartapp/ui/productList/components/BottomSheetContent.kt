@@ -91,7 +91,7 @@ fun BottomSheetContent(
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 },
-            maxLines =98,
+            maxLines = 9,
             overflow = TextOverflow.Ellipsis
         )
         Row(

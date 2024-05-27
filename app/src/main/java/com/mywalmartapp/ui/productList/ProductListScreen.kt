@@ -156,7 +156,7 @@ fun ProductListScreen(
                                 }
                             }) {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.ic_launcher_background),
+                                    painter = painterResource(id = R.drawable.ic_walmart),
                                     contentDescription = null,
                                     tint = Color.White
                                 )
