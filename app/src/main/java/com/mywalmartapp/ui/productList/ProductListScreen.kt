@@ -57,6 +57,7 @@ import com.mywalmartapp.ui.theme.WalmartYellow
 import com.mywalmartapp.ui.productList.components.DrawerContent
 import com.mywalmartapp.ui.productList.components.TopProductComponent
 import com.mywalmartapp.ui.productList.entities.SheetContent
+import com.mywalmartapp.ui.theme.Vermilion
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -176,7 +177,7 @@ fun ProductListScreen(
                                     if (cartItems.isNotEmpty()) {
                                         Badge(
                                             modifier = Modifier.offset(x = (-20).dp, y = 20.dp),
-                                            containerColor = Red
+                                            containerColor = Vermilion
                                         ) {
                                             Text(
                                                 text = cartItems.sumOf { it.quantity }.toString(),

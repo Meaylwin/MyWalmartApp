@@ -38,8 +38,10 @@ import coil.compose.rememberAsyncImagePainter
 import com.myproductswallmart.R
 import com.mywalmartapp.ui.cart.entities.CartItem
 import com.mywalmartapp.ui.productList.entities.ProductItem
-import com.mywalmartapp.ui.theme.LightGreen
+import com.mywalmartapp.ui.theme.BlueInk
 import com.mywalmartapp.ui.theme.Orange
+import com.mywalmartapp.ui.theme.Vermilion
+import com.mywalmartapp.ui.theme.WalmartBlue
 
 @Composable
 fun CartSheetContent(
@@ -144,7 +146,7 @@ fun CartSheetContent(
                                 onClick = { onClickRemoveProduct(cartItem.product) },
                                 shape = RoundedCornerShape(16.dp),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.Red
+                                    containerColor = Vermilion
                                 ),
                                 modifier = Modifier
                                     .width(100.dp)
@@ -197,13 +199,14 @@ fun CartSheetContent(
             Text(
                 text = "Total: $$cartTotal",
                 fontSize = 24.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = BlueInk
             )
             Button(
                 onClick = {  },
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = LightGreen
+                    containerColor = WalmartBlue
                 ),
                 modifier = Modifier
                     .padding(8.dp)
@@ -211,9 +214,9 @@ fun CartSheetContent(
             ) {
                 Text(
                     text = "Comprar",
-                    color = Color.Black,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 22.sp
+                    color = Color.White,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 20.sp
                 )
             }
         }
