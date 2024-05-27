@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.mywalmartapp.data.repository.SharedPreferenceRepository
 import com.mywalmartapp.ui.productList.ProductListScreen
 import com.mywalmartapp.ui.theme.MyProductsWallmartTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -17,6 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        SharedPreferenceRepository.init(this)
         setContent {
             MyProductsWallmartTheme {
                 AppNavigation()

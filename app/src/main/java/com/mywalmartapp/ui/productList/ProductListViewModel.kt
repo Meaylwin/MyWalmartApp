@@ -2,6 +2,7 @@ package com.mywalmartapp.ui.productList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mywalmartapp.data.repository.SharedPreferenceRepository
 import com.mywalmartapp.data.repository.ProductRepository
 import com.mywalmartapp.data.repository.CategoryRepository
 import com.mywalmartapp.ui.cart.entities.CartItem
@@ -35,6 +36,8 @@ class ProductListViewModel @Inject constructor(
     init {
         loadProducts()
         loadCategories()
+        _cartItems.value = SharedPreferenceRepository.getCartItems()
+        _cartTotal.value = SharedPreferenceRepository.getCartTotal()
         viewModelScope.launch {
             _cartItems.collect { updateCartTotal() }
         }
@@ -95,6 +98,7 @@ class ProductListViewModel @Inject constructor(
             _cartItems.value + CartItem(product, 1)
         }
         _cartItems.value = updatedItems
+        SharedPreferenceRepository.saveCartItems(updatedItems)
     }
 
     fun decreaseFromCart(product: ProductItem) {
@@ -108,6 +112,7 @@ class ProductListViewModel @Inject constructor(
                 }
             }
             _cartItems.value = updatedItems
+            SharedPreferenceRepository.saveCartItems(updatedItems)
         } else {
             removeFromCart(product)
         }
@@ -116,10 +121,12 @@ class ProductListViewModel @Inject constructor(
     fun removeFromCart(product: ProductItem) {
         val updatedItems = _cartItems.value.filterNot { it.product.id == product.id }
         _cartItems.value = updatedItems
+        SharedPreferenceRepository.saveCartItems(updatedItems)
     }
 
     private fun updateCartTotal() {
         val total = _cartItems.value.sumOf { it.product.price * it.quantity }.toFloat()
         _cartTotal.value = total
+        SharedPreferenceRepository.saveCartTotal(total)
     }
 }

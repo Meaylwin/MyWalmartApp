@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.rememberAsyncImagePainter
 import com.myproductswallmart.R
+import com.mywalmartapp.ui.cart.entities.CartItem
 import com.mywalmartapp.ui.productList.entities.ProductItem
 import com.mywalmartapp.ui.theme.Orange
 import com.mywalmartapp.ui.theme.WalmartYellow
@@ -35,7 +37,9 @@ import com.mywalmartapp.ui.theme.WalmartYellow
 @Composable
 fun TopProductComponent(
     topProduct: ProductItem?,
-    onClickAddProduct: () -> Unit,
+    cartItems: List<CartItem>,
+    onClickAddProduct: (ProductItem) -> Unit,
+    onClickDecreaseProduct: (ProductItem) -> Unit,
     onClick: () -> Unit
 ) {
     Row(
@@ -71,7 +75,7 @@ fun TopProductComponent(
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
-                    .padding(horizontal = 6.dp, vertical = 10.dp),
+                    .padding(horizontal = 6.dp, vertical = 10.dp)
             ) {
                 Text(
                     text = "Destacado",
@@ -101,17 +105,42 @@ fun TopProductComponent(
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.End
             )
-            Image(
-                painter = painterResource(id = R.drawable.ic_add_product),
-                contentDescription = null,
+            Row(
                 modifier = Modifier
                     .constrainAs(addButton) {
                         end.linkTo(parent.end, margin = 10.dp)
                         bottom.linkTo(parent.bottom, margin = 10.dp)
-                    }
-                    .size(50.dp)
-                    .clickable { onClickAddProduct() }
-            )
+                    },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                val existingItem = cartItems.find { it.product.id == topProduct?.id }
+                if (existingItem != null) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_decrease_product),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(50.dp)
+                            .clickable { onClickDecreaseProduct(existingItem.product) }
+                    )
+                    Text(
+                        text = existingItem.quantity.toString(),
+                        fontSize = 26.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 4.dp)
+                    )
+                }
+                Image(
+                    painter = painterResource(id = R.drawable.ic_add_product),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clickable {
+                            if (topProduct != null) {
+                                onClickAddProduct(topProduct)
+                            }
+                        }
+                )
+            }
         }
     }
 }

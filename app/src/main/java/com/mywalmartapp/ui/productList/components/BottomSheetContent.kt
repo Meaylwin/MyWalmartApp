@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -24,14 +25,17 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.rememberAsyncImagePainter
 import com.myproductswallmart.R
+import com.mywalmartapp.ui.cart.entities.CartItem
 import com.mywalmartapp.ui.productList.entities.ProductItem
 import com.mywalmartapp.ui.theme.Orange
 
 @Composable
 fun BottomSheetContent(
     product: ProductItem?,
-    onClickAddProduct: (ProductItem) -> Unit
-) {
+    cartItems: List<CartItem>,
+    onClickAddProduct: (ProductItem) -> Unit,
+    onClickDecreaseProduct: (ProductItem) -> Unit,
+    ) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxHeight(fraction = 0.8f)
@@ -102,11 +106,28 @@ fun BottomSheetContent(
                     bottom.linkTo(parent.bottom, margin = 20.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                }
+                },
+            verticalAlignment = Alignment.CenterVertically
         ) {
             val  rating = product?.rating?.rate?.toFloat() ?: 0f
             RatingBar(rating)
             Spacer(modifier = Modifier.weight(1f))
+            val existingItem = cartItems.find { it.product.id == product?.id }
+            if (existingItem != null) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_decrease_product),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clickable { onClickDecreaseProduct(existingItem.product) }
+                )
+                Text(
+                    text = existingItem.quantity.toString(),
+                    fontSize = 26.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                )
+            }
             Image(
                 painter = painterResource(id = R.drawable.ic_add_product),
                 contentDescription = null,

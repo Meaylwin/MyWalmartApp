@@ -39,8 +39,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Black
-import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.painterResource
@@ -49,7 +47,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.myproductswallmart.R
-import com.mywalmartapp.ui.cart.entities.CartItem
 import com.mywalmartapp.ui.productList.entities.ProductItem
 import com.mywalmartapp.ui.productList.components.BottomSheetContent
 import com.mywalmartapp.ui.productList.components.CartSheetContent
@@ -142,7 +139,9 @@ fun ProductListScreen(
                         selectedProduct?.let { product ->
                             BottomSheetContent(
                                 product = product,
-                                onClickAddProduct = { productListViewModel.addToCart(product) }
+                                cartItems = cartItems,
+                                onClickAddProduct = { productListViewModel.addToCart(it) },
+                                onClickDecreaseProduct = { productListViewModel.decreaseFromCart(it) }
                             )
                         }
                     }
@@ -230,11 +229,13 @@ fun ProductListScreen(
                             if (currentTopProduct != null) {
                                 TopProductComponent(
                                     topProduct = currentTopProduct,
+                                    cartItems = cartItems,
                                     onClickAddProduct = {
-                                        productListViewModel.addToCart(
-                                            currentTopProduct
-                                        )
+                                        productListViewModel.addToCart(it)
                                     },
+                                    onClickDecreaseProduct = {
+                                        productListViewModel.decreaseFromCart(it)
+                                    }
                                 ) {
                                     setSelectedProduct(currentTopProduct)
                                     coroutineScope.launch {
@@ -256,7 +257,9 @@ fun ProductListScreen(
                                 items(products) { product ->
                                     ProductItemComponent(
                                         product = product,
-                                        onClickAddProduct = { productListViewModel.addToCart(product) },
+                                        cartItems = cartItems,
+                                        onClickAddProduct = { productListViewModel.addToCart(it) },
+                                        onClickDecreaseProduct = { productListViewModel.decreaseFromCart(it) },
                                         onClickDetail = {
                                             setSelectedProduct(product)
                                             coroutineScope.launch {

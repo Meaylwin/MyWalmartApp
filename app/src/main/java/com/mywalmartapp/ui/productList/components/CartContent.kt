@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -184,6 +185,7 @@ fun CartSheetContent(
 
                     }
                 }
+                Divider(color = Color.LightGray, thickness = 1.dp, startIndent = 5.dp)
             }
         }
         Column(
@@ -207,7 +209,12 @@ fun CartSheetContent(
                     .padding(8.dp)
                     .width(400.dp)
             ) {
-                Text(text = "Comprar")
+                Text(
+                    text = "Comprar",
+                    color = Color.Black,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 22.sp
+                )
             }
         }
     }

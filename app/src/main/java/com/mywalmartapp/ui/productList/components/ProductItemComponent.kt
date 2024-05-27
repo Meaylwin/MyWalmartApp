@@ -25,14 +25,17 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.rememberAsyncImagePainter
 import com.myproductswallmart.R
+import com.mywalmartapp.ui.cart.entities.CartItem
 import com.mywalmartapp.ui.productList.entities.ProductItem
 import com.mywalmartapp.ui.theme.Orange
 
 @Composable
 fun ProductItemComponent(
     product: ProductItem,
-    onClickAddProduct: () -> Unit,
-    onClickDetail: () -> Unit)
+    cartItems: List<CartItem>,
+    onClickAddProduct: (ProductItem) -> Unit,
+    onClickDecreaseProduct: (ProductItem) -> Unit,
+    onClickDetail: (ProductItem) -> Unit)
 {
     ConstraintLayout(
         modifier = Modifier
@@ -42,7 +45,7 @@ fun ProductItemComponent(
             )
             .fillMaxWidth()
             .aspectRatio(1f)
-            .clickable { onClickDetail() }
+            .clickable { onClickDetail(product) }
     ) {
         val (imageContent, productContent, bottomContent) = createRefs()
 
@@ -82,7 +85,8 @@ fun ProductItemComponent(
                     bottom.linkTo(parent.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                }
+                },
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = "\$${product.price}",
@@ -91,13 +95,31 @@ fun ProductItemComponent(
                 fontWeight = FontWeight.SemiBold
             )
             Spacer(modifier = Modifier.weight(1f))
-            Image(
-                painter = painterResource(id = R.drawable.ic_add_product),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(30.dp)
-                    .clickable { onClickAddProduct() }
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                val existingItem = cartItems.find { it.product.id == product.id }
+                if (existingItem != null) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_decrease_product),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(30.dp)
+                            .clickable { onClickDecreaseProduct(existingItem.product) }
+                    )
+                    Text(
+                        text = existingItem.quantity.toString(),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(horizontal = 4.dp)
+                    )
+                }
+                Image(
+                    painter = painterResource(id = R.drawable.ic_add_product),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clickable { onClickAddProduct(product) }
+                )
+            }
         }
     }
 }
