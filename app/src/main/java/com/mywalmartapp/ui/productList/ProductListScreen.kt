@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.myproductswallmart.R
+import com.mywalmartapp.ui.cart.entities.CartItem
 import com.mywalmartapp.ui.productList.entities.ProductItem
 import com.mywalmartapp.ui.productList.components.BottomSheetContent
 import com.mywalmartapp.ui.productList.components.CartSheetContent
@@ -179,7 +180,7 @@ fun ProductListScreen(
                                             containerColor = Red
                                         ) {
                                             Text(
-                                                text = cartItems.size.toString(),
+                                                text = cartItems.sumOf { it.quantity }.toString(),
                                                 fontSize = 14.sp,
                                                 fontWeight = FontWeight.SemiBold,
                                                 color = White
